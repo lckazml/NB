@@ -109,3 +109,9 @@ class ConsultRecordForm(BaseForm):
 
         self.fields['customer'].widget.choices = customer_choice
         self.fields['consultant'].widget.choices = [(self.instance.consultant_id, self.instance.consultant), ]
+
+
+class ClassForm(BaseForm):
+    class Meta:
+        model = models.ClassList
+        fields = "__all__"

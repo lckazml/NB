@@ -14,8 +14,8 @@ from django.conf import settings
 
 def login(request):
     err_msg = ''
-    if request.user:
-        return redirect(reverse('customer'))
+    if request.user == 'AnonymousUser':
+        return render(request, 'login.html')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -141,7 +141,7 @@ class ConsultRecord(View):
             all_consult_record = models.ConsultRecord.objects.filter(delete_status=False, consultant=request.user)
         else:
             all_consult_record = models.ConsultRecord.objects.filter(customer_id=customer_id, delete_status=False)
-        return render(request, 'crm/consultant/consult_record_list.html',{'all_consult_record': all_consult_record})
+        return render(request, 'crm/consultant/consult_record_list.html', {'all_consult_record': all_consult_record})
 
 
 def enrollment(request, customer_id=None, edit_id=None):
@@ -173,22 +173,22 @@ def consult_record(request, edit_id=None):
             return redirect(reverse('consult_record', args=(0,)))
     return render(request, 'crm/consultant/edit_consult_record.html', {'form_obj': form_obj})
 
+
 # 展示报名记录
 class EnrollmentList(View):
-    def get(self,request,customer_id):
-        if customer_id=='0':
-            all_record=models.Enrollment.objects.filter(delete_status=False,customer__consultant=request.user)
+    def get(self, request, customer_id):
+        if customer_id == '0':
+            all_record = models.Enrollment.objects.filter(delete_status=False, customer__consultant=request.user)
         else:
-            all_record=models.Enrollment.objects.filter(delete_status=False,customer_id=customer_id)
-        query_params=self.get_query_params()
-        return render(request,'crm/consultant/enrollment_list.html',{
-            'all_record':all_record,
-            'query_params':query_params
+            all_record = models.Enrollment.objects.filter(delete_status=False, customer_id=customer_id)
+        query_params = self.get_query_params()
+        return render(request, 'crm/consultant/enrollment_list.html', {
+            'all_record': all_record,
+            'query_params': query_params
         })
 
-
     def get_query_params(self):
-        url=self.request.get_full_path()
+        url = self.request.get_full_path()
         qd = QueryDict()
         qd._mutable = True
         qd['next'] = url
